@@ -1,0 +1,4 @@
+FFTWithNAudio/bin/
+FFTWithNAudio/obj/
+*.lock
+*.ide
