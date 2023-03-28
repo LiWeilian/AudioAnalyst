@@ -50,11 +50,11 @@ namespace FFTWithNAudio
             this.zedGraphControl1.GraphPane.YAxis.MinorTic.IsOpposite = false;
             this.zedGraphControl1.GraphPane.Y2Axis.MajorTic.IsOpposite = false;
             this.zedGraphControl1.GraphPane.Y2Axis.MinorTic.IsOpposite = false;
-            this.zedGraphControl1.GraphPane.XAxis.Title.Text = "频率";
+            this.zedGraphControl1.GraphPane.XAxis.Title.Text = "频率(Hz)";
             this.zedGraphControl1.GraphPane.XAxis.Type = AxisType.Text;
             this.zedGraphControl1.GraphPane.IsFontsScaled = false;
             this.zedGraphControl1.GraphPane.BarSettings.MinClusterGap = 0f;
-            this._frequencyList = new List<int>();
+            this._frequencyList = new List<double>();
         }
 
         public event EventHandler<ChartMouseMoveEventArgs> ChartMouseMoveEvent;
@@ -148,10 +148,10 @@ namespace FFTWithNAudio
             this.zedGraphControl1.GraphPane.XAxis.Title.IsVisible = false;
         }
 
-        public void InitFrequencyList(List<int> times, int start_frequency)
+        public void InitFrequencyList(List<double> frequencies, int start_frequency)
         {
             this._start_frequency = start_frequency;
-            this._frequencyList = times;
+            this._frequencyList = frequencies;
             List<string> list = new List<string>();
             foreach (int time in this._frequencyList)
             {
@@ -581,7 +581,7 @@ namespace FFTWithNAudio
             GraphPane graphPane = this.zedGraphControl1.GraphPane;
             double x = graphPane.CurveList[0].Points[index].X;
             double y = graphPane.CurveList[0].Points[index].Y;
-            string text = string.Format("频率: {0}\n", this._frequencyList[index]);
+            string text = string.Format("频率: {0} Hz\n", this._frequencyList[index]);
             foreach (CurveItem curveItem in graphPane.CurveList)
             {
                 if (curveItem.IsVisible && !curveItem.IsY2Axis && index < curveItem.Points.Count)
@@ -715,7 +715,7 @@ namespace FFTWithNAudio
 
         private LineObj _hintLine;
 
-        private List<int> _frequencyList;
+        private List<double> _frequencyList;
 
         private int _start_frequency = 0;
 

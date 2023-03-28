@@ -1,4 +1,5 @@
 FFTWithNAudio/bin/
 FFTWithNAudio/obj/
+packages/
 *.lock
 *.ide
