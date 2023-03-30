@@ -38,9 +38,18 @@ namespace FFTWithNAudio
             }
         }
 
+        private ImageScale _imageScale;
         public ImageScale ImageScale
         {
-            get; set;
+            get
+            {
+                return _imageScale;
+            }
+            set
+            {
+                _imageScale = value;
+                this.Text = $"频谱图    {_imageScale.ToString()}";
+            }
         }
 
         private FormSpectrogram()
@@ -95,5 +104,10 @@ namespace FFTWithNAudio
     {
         public double X { get; set; }
         public double Y { get; set; }
+
+        public override string ToString()
+        {
+            return $"时长：{X}s    频率范围：0 ~ {Y}Hz";
+        }
     }
 }

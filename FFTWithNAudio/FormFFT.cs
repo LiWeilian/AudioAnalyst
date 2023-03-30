@@ -18,6 +18,7 @@ namespace FFTWithNAudio
     {
         public FormFFT()
         {
+            //Control.CheckForIllegalCrossThreadCalls = false;
             InitializeComponent();
 
             cbFFTSize.SelectedIndex = 4;
@@ -143,7 +144,7 @@ namespace FFTWithNAudio
             dataFftPhase = null;
 
             gbPower.Text = $"{gbPowerTitle} - 计算中...";
-            gbPhase.Text = $"{gbPhaseTitle} - 计算中...";
+            //gbPhase.Text = $"{gbPhaseTitle} - 计算中...";
             Application.DoEvents();
 
             WaveFileReader wavReader = new WaveFileReader(wavFile);
@@ -204,7 +205,7 @@ namespace FFTWithNAudio
             ClearPhase();
 
             gbPower.Text = $"{gbPowerTitle}";
-            gbPhase.Text = $"{gbPhaseTitle}";
+            //gbPhase.Text = $"{gbPhaseTitle}";
             Application.DoEvents();
         }
 
@@ -218,70 +219,80 @@ namespace FFTWithNAudio
             trackWavPcmPos.TickFrequency = fftSize;
         }
 
+        bool scrolling = false;
         private void PlotWaveDataOnTrackPos(string wavFile, int fftSize, int pos)
         {
-            dataFftPower = null;
-            dataFftPhase = null;
-
-            gbPower.Text = $"{gbPowerTitle} - 计算中...";
-            gbPhase.Text = $"{gbPhaseTitle} - 计算中...";
-            Application.DoEvents();
-
-            WaveFileReader wavReader = new WaveFileReader(wavFile);
-
-            double fftIntval = (double)wavReader.WaveFormat.SampleRate / (double)fftSize;
-            double[] XPoints = new double[fftSize / 2];
-            for (int i = 0; i < fftSize / 2; i++)
+            try
             {
-                XPoints[i] = fftIntval * i;
-            }
+                dataFftPower = null;
+                dataFftPhase = null;
 
-            byte[] allBytes = File.ReadAllBytes(wavFile);
-            byte[] pcmBytes = allBytes.Skip(44).ToArray();
+                gbPower.Text = $"{gbPowerTitle} - 计算中...";
+                gbPhase.Text = $"{gbPhaseTitle} - 计算中...";
+                Application.DoEvents();
 
+                WaveFileReader wavReader = new WaveFileReader(wavFile);
 
-            short[] dataPcm = new short[fftSize];
-            byte[] currentPcmBytes = pcmBytes.Skip(pos * fftSize * 2).Take(fftSize * 2).ToArray();
-            for (int i = 0; i < fftSize; i++)
-            {
-                dataPcm[i] = BitConverter.ToInt16(currentPcmBytes.Skip(i * 2).Take(2).ToArray(), 0);
-            }
-            this.CalcFFT(dataPcm);
-
-            if (fftSize > 512)
-            {
-                int sampleRate = fftSize / 512;
-                double[] XPoints2 = new double[256];
-                double[] dataFftPower2 = new double[256];
-                double[] dataFftPhase2 = new double[256];
-                for (int i = 0; i < 256; i++)
+                double fftIntval = (double)wavReader.WaveFormat.SampleRate / (double)fftSize;
+                double[] XPoints = new double[fftSize / 2];
+                for (int i = 0; i < fftSize / 2; i++)
                 {
-                    XPoints2[i] = XPoints[i * sampleRate];
-                    dataFftPower2[i] = dataFftPower[i * sampleRate];
-                    dataFftPhase2[i] = dataFftPhase[i * sampleRate];
-                }
-                PlotPower(XPoints2, dataFftPower2);
-                PlotPhase(XPoints2, dataFftPhase2);
-            }
-            else
-            {
-                double[] XPoints2 = new double[XPoints.Length];
-                double[] dataFftPower2 = new double[XPoints.Length];
-                double[] dataFftPhase2 = new double[XPoints.Length];
-                for (int i = 0; i < XPoints2.Length; i++)
-                {
-                    XPoints2[i] = XPoints[i];
-                    dataFftPower2[i] = dataFftPower[i];
-                    dataFftPhase2[i] = dataFftPhase[i];
+                    XPoints[i] = fftIntval * i;
                 }
 
-                PlotPower(XPoints2, dataFftPower2);
-                PlotPhase(XPoints2, dataFftPhase2);
-            }
+                byte[] allBytes = File.ReadAllBytes(wavFile);
+                byte[] pcmBytes = allBytes.Skip(44).ToArray();
 
-            gbPower.Text = $"{gbPowerTitle}";
-            gbPhase.Text = $"{gbPhaseTitle}";
-            Application.DoEvents();
+
+                short[] dataPcm = new short[fftSize];
+                byte[] currentPcmBytes = pcmBytes.Skip(pos * fftSize * 2).Take(fftSize * 2).ToArray();
+                for (int i = 0; i < fftSize; i++)
+                {
+                    dataPcm[i] = BitConverter.ToInt16(currentPcmBytes.Skip(i * 2).Take(2).ToArray(), 0);
+                }
+                this.CalcFFT(dataPcm);
+
+                if (fftSize > 512)
+                {
+                    int sampleRate = fftSize / 512;
+                    double[] XPoints2 = new double[256];
+                    double[] dataFftPower2 = new double[256];
+                    double[] dataFftPhase2 = new double[256];
+                    for (int i = 0; i < 256; i++)
+                    {
+                        XPoints2[i] = XPoints[i * sampleRate];
+                        dataFftPower2[i] = dataFftPower[i * sampleRate];
+                        dataFftPhase2[i] = dataFftPhase[i * sampleRate];
+                    }
+                    PlotPower(XPoints2, dataFftPower2);
+                    PlotPhase(XPoints2, dataFftPhase2);
+                }
+                else
+                {
+                    double[] XPoints2 = new double[XPoints.Length];
+                    double[] dataFftPower2 = new double[XPoints.Length];
+                    double[] dataFftPhase2 = new double[XPoints.Length];
+                    for (int i = 0; i < XPoints2.Length; i++)
+                    {
+                        XPoints2[i] = XPoints[i];
+                        dataFftPower2[i] = dataFftPower[i];
+                        dataFftPhase2[i] = dataFftPhase[i];
+                    }
+
+                    PlotPower(XPoints2, dataFftPower2);
+                    PlotPhase(XPoints2, dataFftPhase2);
+                }
+            }
+            catch (Exception)
+            {
+
+            }
+            finally
+            {
+                gbPower.Text = $"{gbPowerTitle}";
+                gbPhase.Text = $"{gbPhaseTitle}";
+                Application.DoEvents();
+            }
         }
 
         private void UpdateTrackBarToolTip(string wavFile, int trackMax, int trackPos)
@@ -304,7 +315,7 @@ namespace FFTWithNAudio
             }
             catch (Exception)
             {
-                //
+                trackToolTip = null;
             }
         }
 
@@ -348,16 +359,11 @@ namespace FFTWithNAudio
 
             //绘图
             double max = 2000;
-            //foreach (var d in spectrogramData)
-            //{
-            //    for (int i = 0; i < d.Length; i++)
-            //    {
-            //        max = Math.Max(max, d[i]);
-            //    }
-            //}
+            double blueFilter = 10;
+            double blueFilterRatio = (100 - blueFilter) / 10;
+            double greenFilter = 50;
             double coloramp = (double)(trackColoramp.Maximum + 1 - trackColoramp.Value) / trackColoramp.Maximum;
             var bitmap = new Bitmap((int)pcmBytes.Length / 2 / fftSize, fftSize /2);
-            var graphics = Graphics.FromImage(bitmap);
             for (int x = 0; x < bitmap.Width; x++)
             {
                 for (int y = 0; y < bitmap.Height; y++)
@@ -366,9 +372,30 @@ namespace FFTWithNAudio
                     value = value > max ? max : value;
                     value = value / max;
                     value = Math.Pow(value, coloramp);
-                    var red = (int)(255 * value); // 计算红色分量
-                    var blue = (int)(255 * (1 - value)); // 计算蓝色分量
-                    var color = Color.FromArgb(red, 0, blue); // 创建颜色
+
+                    /*
+                    //黄->红->蓝
+                    value *= 100;
+                    int red = value < 50 ? 255 : (int)(255 - (value - 50) * 5.1);
+                    int green = value < 50 ? (int)(value * 5.1) : (int)(255 - (value - 50) * 5.1);
+                    int blue = value < 50 ? 0 : (int)((value - 50) * 5.1);
+                    Color color = Color.FromArgb(red, green, blue);
+                    */
+
+                    //蓝->红->黄
+                    value *= 100;
+                    int blue = value < blueFilter ? 255 : (int)(255 - (value - blueFilter) * 25.5 / blueFilterRatio);
+                    int red = (int)(value / 2 * 5.1);
+                    //int green = value < greenFilter ? 0 : (int)((value - greenFilter) * 5.1);
+                    int green = value < greenFilter ? 0 : (int)((value - greenFilter) / (100 - greenFilter) * 255);
+                    Color color = Color.FromArgb(red, green, blue);
+
+                    /*
+                    //蓝->红
+                    var red = (int)(255 * value);
+                    var blue = (int)(255 * (1 - value));
+                    var color = Color.FromArgb(red, 0, blue);
+                    */
                     // 绘制像素
                     bitmap.SetPixel(x, y, color);
                 }
@@ -386,9 +413,11 @@ namespace FFTWithNAudio
 
         private void btnOpenWavFile_Click(object sender, EventArgs e)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "Wave音频文件(*.wav)|*.wav";
-            openFileDialog.Multiselect = false;
+            OpenFileDialog openFileDialog = new OpenFileDialog
+            {
+                Filter = "Wave音频文件(*.wav)|*.wav",
+                Multiselect = false
+            };
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 lstWavFiles.Items.Add(new FileItem { FileName = openFileDialog.FileName });
@@ -448,20 +477,34 @@ namespace FFTWithNAudio
             }
         }
 
-        private void trackWavPcmPos_Scroll(object sender, EventArgs e)
+        private async void trackWavPcmPos_Scroll(object sender, EventArgs e)
         {
             if (lstWavFiles.SelectedItem != null && lstWavFiles.SelectedItem is FileItem)
             {
                 if (trackToolTip == null)
                 {
                     trackToolTip = new ToolTip();
+                    //trackToolTip.IsBalloon = true;
+                    //trackToolTip.UseFading = false;
                 }
-                UpdateTrackBarToolTip((lstWavFiles.SelectedItem as FileItem).FileName,
-                    trackWavPcmPos.Maximum,
-                    trackWavPcmPos.Value);
-                PlotWaveDataOnTrackPos((lstWavFiles.SelectedItem as FileItem).FileName,
-                        int.Parse(cbFFTSize.Text),
-                        trackWavPcmPos.Value);
+                if (!scrolling)
+                {
+                    try
+                    {
+                        scrolling = true;
+                        UpdateTrackBarToolTip((lstWavFiles.SelectedItem as FileItem).FileName,
+                            trackWavPcmPos.Maximum,
+                            trackWavPcmPos.Value);
+
+                        PlotWaveDataOnTrackPos((lstWavFiles.SelectedItem as FileItem).FileName,
+                            int.Parse(cbFFTSize.Text),
+                            trackWavPcmPos.Value);
+                    }
+                    finally
+                    {
+                        scrolling = false;
+                    }
+                }
             }
         }
 
@@ -522,6 +565,29 @@ namespace FFTWithNAudio
                 {
                     btnCreateSpectrogram.Text = "生成";
                     btnCreateSpectrogram.Enabled = true;
+                }
+            }
+        }
+
+        private void btnRemoveWavFile_Click(object sender, EventArgs e)
+        {
+            if (lstWavFiles.SelectedItem != null)
+            {
+                int selectedIndex = lstWavFiles.SelectedIndex;
+                lstWavFiles.Items.Remove(lstWavFiles.SelectedItem);
+                if (lstWavFiles.Items.Count > 0)
+                {
+                    if (selectedIndex == 0)
+                    {
+                        lstWavFiles.SelectedIndex = 0;
+                    } else
+                    {
+                        lstWavFiles.SelectedIndex = selectedIndex - 1;
+                    }
+                } else
+                {
+                    fftPowerChart.ClearData();
+                    fftPhaseChart.ClearData();
                 }
             }
         }

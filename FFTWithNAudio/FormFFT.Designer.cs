@@ -32,6 +32,7 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.lstWavFiles = new System.Windows.Forms.ListBox();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.btnRemoveWavFile = new System.Windows.Forms.Button();
             this.btnOpenWavFile = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
             this.gbPhase = new System.Windows.Forms.GroupBox();
@@ -41,6 +42,8 @@
             this.trackWavPcmPos = new System.Windows.Forms.TrackBar();
             this.panel5 = new System.Windows.Forms.Panel();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.trackColoramp = new System.Windows.Forms.TrackBar();
             this.btnCreateSpectrogram = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.cbMaxPowerY = new System.Windows.Forms.ComboBox();
@@ -50,9 +53,6 @@
             this.cbFFTSize = new System.Windows.Forms.ComboBox();
             this.panel6 = new System.Windows.Forms.Panel();
             this.chkAll = new System.Windows.Forms.CheckBox();
-            this.trackColoramp = new System.Windows.Forms.TrackBar();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -62,16 +62,15 @@
             ((System.ComponentModel.ISupportInitialize)(this.trackWavPcmPos)).BeginInit();
             this.panel5.SuspendLayout();
             this.groupBox5.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.trackColoramp)).BeginInit();
             this.groupBox4.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.panel6.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.trackColoramp)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
             // 
             this.panel1.Controls.Add(this.groupBox1);
-            this.panel1.Controls.Add(this.panel3);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Left;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
@@ -81,10 +80,11 @@
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.lstWavFiles);
+            this.groupBox1.Controls.Add(this.panel3);
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox1.Location = new System.Drawing.Point(0, 57);
+            this.groupBox1.Location = new System.Drawing.Point(0, 0);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(333, 584);
+            this.groupBox1.Size = new System.Drawing.Size(333, 641);
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "文件";
@@ -94,24 +94,35 @@
             this.lstWavFiles.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lstWavFiles.FormattingEnabled = true;
             this.lstWavFiles.ItemHeight = 20;
-            this.lstWavFiles.Location = new System.Drawing.Point(3, 23);
+            this.lstWavFiles.Location = new System.Drawing.Point(3, 65);
             this.lstWavFiles.Name = "lstWavFiles";
-            this.lstWavFiles.Size = new System.Drawing.Size(327, 558);
+            this.lstWavFiles.Size = new System.Drawing.Size(327, 573);
             this.lstWavFiles.TabIndex = 0;
             this.lstWavFiles.SelectedIndexChanged += new System.EventHandler(this.lstWavFiles_SelectedIndexChanged);
             // 
             // panel3
             // 
+            this.panel3.Controls.Add(this.btnRemoveWavFile);
             this.panel3.Controls.Add(this.btnOpenWavFile);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel3.Location = new System.Drawing.Point(0, 0);
+            this.panel3.Location = new System.Drawing.Point(3, 23);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(333, 57);
-            this.panel3.TabIndex = 0;
+            this.panel3.Size = new System.Drawing.Size(327, 42);
+            this.panel3.TabIndex = 1;
+            // 
+            // btnRemoveWavFile
+            // 
+            this.btnRemoveWavFile.Location = new System.Drawing.Point(90, 6);
+            this.btnRemoveWavFile.Name = "btnRemoveWavFile";
+            this.btnRemoveWavFile.Size = new System.Drawing.Size(75, 30);
+            this.btnRemoveWavFile.TabIndex = 1;
+            this.btnRemoveWavFile.Text = "移除";
+            this.btnRemoveWavFile.UseVisualStyleBackColor = true;
+            this.btnRemoveWavFile.Click += new System.EventHandler(this.btnRemoveWavFile_Click);
             // 
             // btnOpenWavFile
             // 
-            this.btnOpenWavFile.Location = new System.Drawing.Point(13, 13);
+            this.btnOpenWavFile.Location = new System.Drawing.Point(9, 6);
             this.btnOpenWavFile.Name = "btnOpenWavFile";
             this.btnOpenWavFile.Size = new System.Drawing.Size(75, 30);
             this.btnOpenWavFile.TabIndex = 0;
@@ -178,7 +189,6 @@
             // trackWavPcmPos
             // 
             this.trackWavPcmPos.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.trackWavPcmPos.Enabled = false;
             this.trackWavPcmPos.Location = new System.Drawing.Point(3, 23);
             this.trackWavPcmPos.Name = "trackWavPcmPos";
             this.trackWavPcmPos.Size = new System.Drawing.Size(764, 59);
@@ -199,7 +209,6 @@
             // 
             // groupBox5
             // 
-            this.groupBox5.Controls.Add(this.label4);
             this.groupBox5.Controls.Add(this.label3);
             this.groupBox5.Controls.Add(this.trackColoramp);
             this.groupBox5.Controls.Add(this.btnCreateSpectrogram);
@@ -210,6 +219,25 @@
             this.groupBox5.TabIndex = 11;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "频谱图";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(16, 59);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(187, 20);
+            this.label3.TabIndex = 2;
+            this.label3.Text = "弱           渲染效果           强";
+            // 
+            // trackColoramp
+            // 
+            this.trackColoramp.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.trackColoramp.Location = new System.Drawing.Point(3, 78);
+            this.trackColoramp.Maximum = 20;
+            this.trackColoramp.Name = "trackColoramp";
+            this.trackColoramp.Size = new System.Drawing.Size(213, 56);
+            this.trackColoramp.TabIndex = 1;
+            this.trackColoramp.Value = 17;
             // 
             // btnCreateSpectrogram
             // 
@@ -322,8 +350,6 @@
             // chkAll
             // 
             this.chkAll.AutoSize = true;
-            this.chkAll.Checked = true;
-            this.chkAll.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkAll.Location = new System.Drawing.Point(20, 16);
             this.chkAll.Name = "chkAll";
             this.chkAll.Size = new System.Drawing.Size(181, 24);
@@ -331,34 +357,6 @@
             this.chkAll.Text = "显示完整音频时间分布";
             this.chkAll.UseVisualStyleBackColor = true;
             this.chkAll.CheckedChanged += new System.EventHandler(this.chkAll_CheckedChanged);
-            // 
-            // trackColoramp
-            // 
-            this.trackColoramp.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.trackColoramp.Location = new System.Drawing.Point(3, 78);
-            this.trackColoramp.Maximum = 20;
-            this.trackColoramp.Name = "trackColoramp";
-            this.trackColoramp.Size = new System.Drawing.Size(213, 56);
-            this.trackColoramp.TabIndex = 1;
-            this.trackColoramp.Value = 16;
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(16, 59);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(24, 20);
-            this.label3.TabIndex = 2;
-            this.label3.Text = "弱";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(177, 59);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(24, 20);
-            this.label4.TabIndex = 3;
-            this.label4.Text = "强";
             // 
             // FormFFT
             // 
@@ -384,13 +382,13 @@
             this.panel5.ResumeLayout(false);
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.trackColoramp)).EndInit();
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             this.panel6.ResumeLayout(false);
             this.panel6.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.trackColoramp)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -399,8 +397,6 @@
 
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.Panel panel3;
-        private System.Windows.Forms.Button btnOpenWavFile;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.GroupBox gbPower;
         private System.Windows.Forms.ListBox lstWavFiles;
@@ -420,8 +416,10 @@
         private System.Windows.Forms.GroupBox gbPhase;
         private System.Windows.Forms.Button btnCreateSpectrogram;
         private System.Windows.Forms.TrackBar trackColoramp;
-        private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.Button btnRemoveWavFile;
+        private System.Windows.Forms.Button btnOpenWavFile;
     }
 }
 
