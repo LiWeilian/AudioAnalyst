@@ -28,7 +28,8 @@ namespace FFTWithNAudio
             this.InitializeFFTPhaseChartControl();
         }
 
-        
+        double[] dataFftPower;
+        double[] dataFftPhase;
         private (int, double[]) CalcFFT(short[] dataPcm)
         {
             // the PCM size to be analyzed with FFT must be a power of 2
@@ -52,43 +53,26 @@ namespace FFTWithNAudio
             {
                 dataFftPower = new double[fftPoints / 2];
             }
-            for (int i = 0; i < fftPoints / 2; i++)
-            {
-                double fftLeft = Math.Abs(fftFull[i].X + fftFull[i].Y);
-                double fftRight = Math.Abs(fftFull[fftPoints - i - 1].X + fftFull[fftPoints - i - 1].Y);
-                //double fftRight = 0;
-                dataFft[i] = fftLeft + fftRight;
-
-                dataFftPower[i] = Math.Max(dataFftPower[i], dataFft[i]);
-            }
-
-            // 计算FFT相位
-            //if (dataFftPhase == null)
-            //{
-            //    dataFftPhase = new double[fftPoints];
-            //}
-            //for (int i = 0; i < fftFull.Length; i++)
-            //{
-            //    dataFftPhase[i] = Math.Atan2(fftFull[i].Y, fftFull[i].X) * 180 / Math.PI;
-            //}
             if (dataFftPhase == null)
             {
                 dataFftPhase = new double[fftPoints / 2];
             }
             for (int i = 0; i < fftPoints / 2; i++)
             {
-                dataFftPhase[i] = Math.Atan2(fftFull[i].Y + fftFull[fftPoints - i- 1].Y, 
-                    fftFull[i].X + fftFull[fftPoints - i - 1].X) * 360 / Math.PI;
+                //功率
+                double fftLeft = Math.Abs(fftFull[i].X + fftFull[i].Y);
+                double fftRight = Math.Abs(fftFull[fftPoints - i - 1].X + fftFull[fftPoints - i - 1].Y);
+                dataFft[i] = fftLeft + fftRight;
+                dataFftPower[i] = Math.Max(dataFftPower[i], dataFft[i]);
+
+                //相位
+                double phaseLeft = Math.Atan2(fftFull[i].Y, fftFull[i].X);
+                double phaseRight = Math.Atan2(fftFull[fftPoints - i - 1].Y, fftFull[fftPoints - i - 1].X);
+                dataFftPhase[i] = (phaseLeft + phaseRight) / 2 * 360.0 / Math.PI;
             }
 
             return (fftPoints, dataFft);
         }
-        
-
-        private WaveInEvent wvin;
-        double[] dataFftPower;
-        double[] dataFftPhase;
-        private ToolTip trackToolTip;
 
         #region FFT Chart with ZGraph
         private ucFFTChartPanel fftPowerChart;
@@ -295,6 +279,7 @@ namespace FFTWithNAudio
             }
         }
 
+        private ToolTip trackToolTip;
         private void UpdateTrackBarToolTip(string wavFile, int trackMax, int trackPos)
         {
             WaveFileReader wavReader = new WaveFileReader(wavFile);
