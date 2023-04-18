@@ -394,6 +394,7 @@ namespace FFTWithNAudio
                 Y = wavReader.WaveFormat.SampleRate / 2
             };
             FormSpectrogram.Instance.Show();
+            FormSpectrogram.Instance.BringToFront();
         }
 
         private void btnOpenWavFile_Click(object sender, EventArgs e)
