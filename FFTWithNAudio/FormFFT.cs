@@ -6,11 +6,13 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Runtime.Remoting.Channels;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using NAudio.Dsp;
 using NAudio.Wave;
+using static System.Net.WebRequestMethods;
 
 namespace FFTWithNAudio
 {
@@ -141,7 +143,7 @@ namespace FFTWithNAudio
                 XPoints[i] = fftIntval * i;
             }
 
-            byte[] allBytes = File.ReadAllBytes(wavFile);
+            byte[] allBytes = System.IO.File.ReadAllBytes(wavFile);
             byte[] pcmBytes = allBytes.Skip(44).ToArray();
 
             int offSet = 0;
@@ -224,7 +226,7 @@ namespace FFTWithNAudio
                     XPoints[i] = fftIntval * i;
                 }
 
-                byte[] allBytes = File.ReadAllBytes(wavFile);
+                byte[] allBytes = System.IO.File.ReadAllBytes(wavFile);
                 byte[] pcmBytes = allBytes.Skip(44).ToArray();
 
 
@@ -319,7 +321,7 @@ namespace FFTWithNAudio
                 XPoints[i] = fftIntval * i;
             }
 
-            byte[] allBytes = File.ReadAllBytes(wavFile);
+            byte[] allBytes = System.IO.File.ReadAllBytes(wavFile);
             byte[] pcmBytes = allBytes.Skip(44).ToArray();
             List<double[]> spectrogramData = new List<double[]>();
             int offSet = 0;
@@ -397,6 +399,88 @@ namespace FFTWithNAudio
             FormSpectrogram.Instance.BringToFront();
         }
 
+        #region 测试滤波
+        private MyWaveProvider CreateFrequencyFilter(string wavFileName,
+            float lowPassFreq = 1500, float lowPassQ = 1,
+            float highPassFreq = 700, float highPassQ = 1)
+        {
+            WaveFileReader reader = new WaveFileReader(wavFileName);
+            WaveChannel32 wavChannel = new WaveChannel32(reader);
+            MyWaveProvider myWaveProvider = new MyWaveProvider(wavChannel.ToSampleProvider(), 
+                reader.WaveFormat.SampleRate,
+                lowPassFreq, lowPassQ, highPassFreq, highPassQ);
+
+            return myWaveProvider;
+
+            ////播放
+            //WaveOut wavOut = new WaveOut();
+            //wavOut.Init(myWaveProvider);
+            //wavOut.Play();
+
+            ////保存
+            //string outputFilePath = $".\\temp\\testfilter_{DateTime.Now.ToString("yyyyMMddHHmmss")}.wav";
+            //WaveFileWriter wavFileWriter = new WaveFileWriter(outputFilePath, wavOut.OutputWaveFormat);
+            //wavOut.Play();
+        }
+
+        private void CreateWaveFile(string filename, IWaveProvider sourceProvider)
+        {
+            using (var writer = new WaveFileWriter(filename, sourceProvider.WaveFormat))
+            {
+                var buffer = new byte[sourceProvider.WaveFormat.AverageBytesPerSecond * 4];
+                while (true)
+                {
+                    int bytesRead = sourceProvider.Read(buffer, 0, buffer.Length);
+                    if (bytesRead == 0)
+                    {
+                        // end of source provider
+                        break;
+                    }
+                    // Write will throw exception if WAV file becomes too large
+                    writer.Write(buffer, 0, bytesRead);
+                }
+            }
+        }
+
+        WaveOut wavOut = null;
+
+        private void Play()
+        {
+            if (lstWavFiles.SelectedItem != null && lstWavFiles.SelectedItem is FileItem)
+            {
+                if (wavOut == null)
+                {
+                    wavOut = new WaveOut();
+
+                    string wavFileName = (lstWavFiles.SelectedItem as FileItem).FileName;
+                    MyWaveProvider provider = CreateFrequencyFilter(wavFileName, 
+                        tbLowPass.Value * 50, 1,
+                        tbHighPass.Value * 50, 1);
+                    wavOut.Init(provider);
+                }
+                wavOut.Play();
+            }
+                
+        }
+
+        private void Pause()
+        {
+            if (wavOut != null)
+            {
+                wavOut.Pause();
+            }
+        }
+
+        private void Stop() 
+        { 
+            if (wavOut != null)
+            {
+                wavOut.Stop();
+                wavOut = null;
+            }
+        }
+        #endregion
+
         private void btnOpenWavFile_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog
@@ -424,6 +508,12 @@ namespace FFTWithNAudio
                     PlotWaveDataOnTrackPos((lstWavFiles.SelectedItem as FileItem).FileName,
                         int.Parse(cbFFTSize.Text),
                         trackWavPcmPos.Value);
+                }
+
+                if (wavOut != null)
+                {
+                    this.Stop();
+                    wavOut = null;
                 }
             }
         }
@@ -577,6 +667,40 @@ namespace FFTWithNAudio
                 }
             }
         }
+
+        private void btnPlay_Click(object sender, EventArgs e)
+        {
+            this.Play();
+        }
+
+        private void btnPause_Click(object sender, EventArgs e)
+        {
+            this.Pause();
+        }
+
+        private void btnStop_Click(object sender, EventArgs e)
+        {
+            this.Stop();
+        }
+
+        private void tbHighPass_ValueChanged(object sender, EventArgs e)
+        {
+            if (tbHighPass.Value >= tbLowPass.Value)
+            {
+                tbLowPass.Value = tbHighPass.Value;
+            }
+
+            lblHighPassFreq.Text = $"最低频率：{tbHighPass.Value * 50} Hz";
+        }
+
+        private void tbLowPass_ValueChanged(object sender, EventArgs e)
+        {
+            if (tbLowPass.Value <= tbHighPass.Value)
+            {
+                tbHighPass.Value = tbLowPass.Value;
+            }
+            lblLowPassFreq.Text = $"最高频率：{tbLowPass.Value * 50} Hz";
+        }
     }
 
     class FileItem
@@ -592,5 +716,62 @@ namespace FFTWithNAudio
     {
         Power,
         Phase
+    }
+
+    class MyWaveProvider : ISampleProvider
+    {
+        private ISampleProvider sourceProvider;
+        private float lowPassFreq, highPassFreq;
+        private float lowPassQ, highPassQ;
+        private int sampleRate;
+        private int channels;
+        private BiQuadFilter[] lowPassFilters;
+        private BiQuadFilter[] highPassFilters;
+
+        public MyWaveProvider(ISampleProvider sourceProvider, int sampleRate, 
+            float lowPassFreq = 1500, float lowPassQ = 1,
+            float highPassFreq = 700, float highPassQ = 1)
+        {
+            this.sourceProvider = sourceProvider;
+            this.sampleRate = sampleRate;
+            this.lowPassFreq = lowPassFreq;
+            this.lowPassQ = lowPassQ;
+            this.highPassFreq = highPassFreq;
+            this.highPassQ = highPassQ;
+
+            channels = sourceProvider.WaveFormat.Channels;
+            lowPassFilters = new BiQuadFilter[channels];
+            highPassFilters = new BiQuadFilter[channels];
+            CreateFilters();            
+        }
+
+        private void CreateFilters()
+        {
+            for (int n = 0; n < channels; n++)
+                if (lowPassFilters[n] == null)
+                    lowPassFilters[n] = BiQuadFilter.LowPassFilter(sampleRate, lowPassFreq, lowPassQ);
+                else
+                    lowPassFilters[n].SetLowPassFilter(sampleRate, lowPassFreq, lowPassQ );
+
+            for (int n = 0; n < channels; n++)
+                if (highPassFilters[n] == null)
+                    highPassFilters[n] = BiQuadFilter.HighPassFilter(sampleRate, highPassFreq, highPassQ);
+                else
+                    highPassFilters[n].SetHighPassFilter(sampleRate, highPassFreq, highPassQ);
+        }
+
+        public WaveFormat WaveFormat { get { return sourceProvider.WaveFormat; } }
+
+        public int Read(float[] buffer, int offset, int count)
+        {
+            int samplesRead = sourceProvider.Read(buffer, offset, count);
+
+            for (int i = 0; i < samplesRead; i++)
+                buffer[offset + i] = lowPassFilters[(i % channels)].Transform(buffer[offset + i]);
+            for (int i = 0; i < samplesRead; i++)
+                buffer[offset + i] = highPassFilters[(i % channels)].Transform(buffer[offset + i]);
+
+            return samplesRead;
+        }
     }
 }

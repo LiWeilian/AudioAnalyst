@@ -41,6 +41,14 @@
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.trackWavPcmPos = new System.Windows.Forms.TrackBar();
             this.panel5 = new System.Windows.Forms.Panel();
+            this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.btnStop = new System.Windows.Forms.Button();
+            this.btnPause = new System.Windows.Forms.Button();
+            this.btnPlay = new System.Windows.Forms.Button();
+            this.lblLowPassFreq = new System.Windows.Forms.Label();
+            this.tbLowPass = new System.Windows.Forms.TrackBar();
+            this.lblHighPassFreq = new System.Windows.Forms.Label();
+            this.tbHighPass = new System.Windows.Forms.TrackBar();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.label3 = new System.Windows.Forms.Label();
             this.trackColoramp = new System.Windows.Forms.TrackBar();
@@ -61,6 +69,9 @@
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackWavPcmPos)).BeginInit();
             this.panel5.SuspendLayout();
+            this.groupBox6.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.tbLowPass)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.tbHighPass)).BeginInit();
             this.groupBox5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackColoramp)).BeginInit();
             this.groupBox4.SuspendLayout();
@@ -197,6 +208,7 @@
             // 
             // panel5
             // 
+            this.panel5.Controls.Add(this.groupBox6);
             this.panel5.Controls.Add(this.groupBox5);
             this.panel5.Controls.Add(this.groupBox4);
             this.panel5.Controls.Add(this.groupBox3);
@@ -206,6 +218,90 @@
             this.panel5.Name = "panel5";
             this.panel5.Size = new System.Drawing.Size(219, 641);
             this.panel5.TabIndex = 4;
+            // 
+            // groupBox6
+            // 
+            this.groupBox6.Controls.Add(this.btnStop);
+            this.groupBox6.Controls.Add(this.btnPause);
+            this.groupBox6.Controls.Add(this.btnPlay);
+            this.groupBox6.Controls.Add(this.lblLowPassFreq);
+            this.groupBox6.Controls.Add(this.tbLowPass);
+            this.groupBox6.Controls.Add(this.lblHighPassFreq);
+            this.groupBox6.Controls.Add(this.tbHighPass);
+            this.groupBox6.Dock = System.Windows.Forms.DockStyle.Top;
+            this.groupBox6.Location = new System.Drawing.Point(0, 278);
+            this.groupBox6.Name = "groupBox6";
+            this.groupBox6.Size = new System.Drawing.Size(219, 245);
+            this.groupBox6.TabIndex = 12;
+            this.groupBox6.TabStop = false;
+            this.groupBox6.Text = "播放";
+            // 
+            // btnStop
+            // 
+            this.btnStop.Location = new System.Drawing.Point(146, 163);
+            this.btnStop.Name = "btnStop";
+            this.btnStop.Size = new System.Drawing.Size(60, 30);
+            this.btnStop.TabIndex = 6;
+            this.btnStop.Text = "口";
+            this.btnStop.UseVisualStyleBackColor = true;
+            this.btnStop.Click += new System.EventHandler(this.btnStop_Click);
+            // 
+            // btnPause
+            // 
+            this.btnPause.Location = new System.Drawing.Point(77, 163);
+            this.btnPause.Name = "btnPause";
+            this.btnPause.Size = new System.Drawing.Size(60, 30);
+            this.btnPause.TabIndex = 5;
+            this.btnPause.Text = "| |";
+            this.btnPause.UseVisualStyleBackColor = true;
+            this.btnPause.Click += new System.EventHandler(this.btnPause_Click);
+            // 
+            // btnPlay
+            // 
+            this.btnPlay.Location = new System.Drawing.Point(11, 163);
+            this.btnPlay.Name = "btnPlay";
+            this.btnPlay.Size = new System.Drawing.Size(60, 30);
+            this.btnPlay.TabIndex = 4;
+            this.btnPlay.Text = ">>";
+            this.btnPlay.UseVisualStyleBackColor = true;
+            this.btnPlay.Click += new System.EventHandler(this.btnPlay_Click);
+            // 
+            // lblLowPassFreq
+            // 
+            this.lblLowPassFreq.AutoSize = true;
+            this.lblLowPassFreq.Location = new System.Drawing.Point(7, 89);
+            this.lblLowPassFreq.Name = "lblLowPassFreq";
+            this.lblLowPassFreq.Size = new System.Drawing.Size(139, 20);
+            this.lblLowPassFreq.TabIndex = 3;
+            this.lblLowPassFreq.Text = "最高频率：4000Hz";
+            // 
+            // tbLowPass
+            // 
+            this.tbLowPass.Location = new System.Drawing.Point(7, 114);
+            this.tbLowPass.Maximum = 80;
+            this.tbLowPass.Name = "tbLowPass";
+            this.tbLowPass.Size = new System.Drawing.Size(206, 56);
+            this.tbLowPass.TabIndex = 2;
+            this.tbLowPass.Value = 80;
+            this.tbLowPass.ValueChanged += new System.EventHandler(this.tbLowPass_ValueChanged);
+            // 
+            // lblHighPassFreq
+            // 
+            this.lblHighPassFreq.AutoSize = true;
+            this.lblHighPassFreq.Location = new System.Drawing.Point(7, 27);
+            this.lblHighPassFreq.Name = "lblHighPassFreq";
+            this.lblHighPassFreq.Size = new System.Drawing.Size(112, 20);
+            this.lblHighPassFreq.TabIndex = 1;
+            this.lblHighPassFreq.Text = "最低频率：0Hz";
+            // 
+            // tbHighPass
+            // 
+            this.tbHighPass.Location = new System.Drawing.Point(7, 52);
+            this.tbHighPass.Maximum = 80;
+            this.tbHighPass.Name = "tbHighPass";
+            this.tbHighPass.Size = new System.Drawing.Size(206, 56);
+            this.tbHighPass.TabIndex = 0;
+            this.tbHighPass.ValueChanged += new System.EventHandler(this.tbHighPass_ValueChanged);
             // 
             // groupBox5
             // 
@@ -370,7 +466,7 @@
             this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.Name = "FormFFT";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "FFT With NAudio";
+            this.Text = "漏水音频频谱分析";
             this.panel1.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
             this.panel3.ResumeLayout(false);
@@ -380,6 +476,10 @@
             this.groupBox2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackWavPcmPos)).EndInit();
             this.panel5.ResumeLayout(false);
+            this.groupBox6.ResumeLayout(false);
+            this.groupBox6.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.tbLowPass)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.tbHighPass)).EndInit();
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackColoramp)).EndInit();
@@ -420,6 +520,14 @@
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.Button btnRemoveWavFile;
         private System.Windows.Forms.Button btnOpenWavFile;
+        private System.Windows.Forms.GroupBox groupBox6;
+        private System.Windows.Forms.Button btnStop;
+        private System.Windows.Forms.Button btnPause;
+        private System.Windows.Forms.Button btnPlay;
+        private System.Windows.Forms.Label lblLowPassFreq;
+        private System.Windows.Forms.TrackBar tbLowPass;
+        private System.Windows.Forms.Label lblHighPassFreq;
+        private System.Windows.Forms.TrackBar tbHighPass;
     }
 }
 
