@@ -42,6 +42,7 @@
             this.trackWavPcmPos = new System.Windows.Forms.TrackBar();
             this.panel5 = new System.Windows.Forms.Panel();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.btnSaveFilteredWaveFile = new System.Windows.Forms.Button();
             this.btnStop = new System.Windows.Forms.Button();
             this.btnPause = new System.Windows.Forms.Button();
             this.btnPlay = new System.Windows.Forms.Button();
@@ -61,6 +62,8 @@
             this.cbFFTSize = new System.Windows.Forms.ComboBox();
             this.panel6 = new System.Windows.Forms.Panel();
             this.chkAll = new System.Windows.Forms.CheckBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.txtQValue = new System.Windows.Forms.TextBox();
             this.panel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -221,6 +224,9 @@
             // 
             // groupBox6
             // 
+            this.groupBox6.Controls.Add(this.txtQValue);
+            this.groupBox6.Controls.Add(this.label4);
+            this.groupBox6.Controls.Add(this.btnSaveFilteredWaveFile);
             this.groupBox6.Controls.Add(this.btnStop);
             this.groupBox6.Controls.Add(this.btnPause);
             this.groupBox6.Controls.Add(this.btnPlay);
@@ -228,17 +234,27 @@
             this.groupBox6.Controls.Add(this.tbLowPass);
             this.groupBox6.Controls.Add(this.lblHighPassFreq);
             this.groupBox6.Controls.Add(this.tbHighPass);
-            this.groupBox6.Dock = System.Windows.Forms.DockStyle.Top;
+            this.groupBox6.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox6.Location = new System.Drawing.Point(0, 278);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(219, 245);
+            this.groupBox6.Size = new System.Drawing.Size(219, 285);
             this.groupBox6.TabIndex = 12;
             this.groupBox6.TabStop = false;
-            this.groupBox6.Text = "播放";
+            this.groupBox6.Text = "滤波和播放";
+            // 
+            // btnSaveFilteredWaveFile
+            // 
+            this.btnSaveFilteredWaveFile.Location = new System.Drawing.Point(11, 248);
+            this.btnSaveFilteredWaveFile.Name = "btnSaveFilteredWaveFile";
+            this.btnSaveFilteredWaveFile.Size = new System.Drawing.Size(195, 30);
+            this.btnSaveFilteredWaveFile.TabIndex = 7;
+            this.btnSaveFilteredWaveFile.Text = "保存滤波后文件";
+            this.btnSaveFilteredWaveFile.UseVisualStyleBackColor = true;
+            this.btnSaveFilteredWaveFile.Click += new System.EventHandler(this.btnSaveFilteredWaveFile_Click);
             // 
             // btnStop
             // 
-            this.btnStop.Location = new System.Drawing.Point(146, 163);
+            this.btnStop.Location = new System.Drawing.Point(146, 211);
             this.btnStop.Name = "btnStop";
             this.btnStop.Size = new System.Drawing.Size(60, 30);
             this.btnStop.TabIndex = 6;
@@ -248,7 +264,7 @@
             // 
             // btnPause
             // 
-            this.btnPause.Location = new System.Drawing.Point(77, 163);
+            this.btnPause.Location = new System.Drawing.Point(77, 211);
             this.btnPause.Name = "btnPause";
             this.btnPause.Size = new System.Drawing.Size(60, 30);
             this.btnPause.TabIndex = 5;
@@ -258,7 +274,7 @@
             // 
             // btnPlay
             // 
-            this.btnPlay.Location = new System.Drawing.Point(11, 163);
+            this.btnPlay.Location = new System.Drawing.Point(11, 211);
             this.btnPlay.Name = "btnPlay";
             this.btnPlay.Size = new System.Drawing.Size(60, 30);
             this.btnPlay.TabIndex = 4;
@@ -454,6 +470,23 @@
             this.chkAll.UseVisualStyleBackColor = true;
             this.chkAll.CheckedChanged += new System.EventHandler(this.chkAll_CheckedChanged);
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(7, 162);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(36, 20);
+            this.label4.TabIndex = 8;
+            this.label4.Text = "Q值";
+            // 
+            // txtQValue
+            // 
+            this.txtQValue.Location = new System.Drawing.Point(46, 159);
+            this.txtQValue.Name = "txtQValue";
+            this.txtQValue.Size = new System.Drawing.Size(155, 27);
+            this.txtQValue.TabIndex = 9;
+            this.txtQValue.Text = "1.0";
+            // 
             // FormFFT
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
@@ -466,7 +499,7 @@
             this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.Name = "FormFFT";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "漏水音频频谱分析";
+            this.Text = "漏水音频频谱分析 - 仅支持单声道16位wav文件";
             this.panel1.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
             this.panel3.ResumeLayout(false);
@@ -528,6 +561,9 @@
         private System.Windows.Forms.TrackBar tbLowPass;
         private System.Windows.Forms.Label lblHighPassFreq;
         private System.Windows.Forms.TrackBar tbHighPass;
+        private System.Windows.Forms.Button btnSaveFilteredWaveFile;
+        private System.Windows.Forms.TextBox txtQValue;
+        private System.Windows.Forms.Label label4;
     }
 }
 

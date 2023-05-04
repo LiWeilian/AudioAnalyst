@@ -399,7 +399,7 @@ namespace FFTWithNAudio
             FormSpectrogram.Instance.BringToFront();
         }
 
-        #region 测试滤波
+        #region 滤波
         private MyWaveProvider CreateFrequencyFilter(string wavFileName,
             float lowPassFreq = 1500, float lowPassQ = 1,
             float highPassFreq = 700, float highPassQ = 1)
@@ -451,11 +451,15 @@ namespace FFTWithNAudio
                 if (wavOut == null)
                 {
                     wavOut = new WaveOut();
-
+                    float q;
+                    if (!float.TryParse(txtQValue.Text, out q) || q <= 0)
+                    {
+                        q = 1.0f;
+                    }
                     string wavFileName = (lstWavFiles.SelectedItem as FileItem).FileName;
                     MyWaveProvider provider = CreateFrequencyFilter(wavFileName, 
-                        tbLowPass.Value * 50, 1,
-                        tbHighPass.Value * 50, 1);
+                        tbLowPass.Value * 50, q,
+                        tbHighPass.Value * 50, q);
                     wavOut.Init(provider);
                 }
                 wavOut.Play();
@@ -477,6 +481,65 @@ namespace FFTWithNAudio
             {
                 wavOut.Stop();
                 wavOut = null;
+            }
+        }
+
+        private void SaveFiltered()
+        {
+            if (lstWavFiles.SelectedItem != null && lstWavFiles.SelectedItem is FileItem)
+            {
+                SaveFileDialog sfd = new SaveFileDialog();
+                sfd.Filter = "波形音频文件(*.wav)|*.wav";
+                sfd.DefaultExt = ".wav";
+                sfd.OverwritePrompt = true;
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    float q;
+                    if (!float.TryParse(txtQValue.Text, out q) || q <= 0)
+                    {
+                        q = 1.0f;
+                    }
+                    string wavFileName = (lstWavFiles.SelectedItem as FileItem).FileName;
+                    WaveFileReader reader = new WaveFileReader(wavFileName);
+                    MyWaveProvider provider = CreateFrequencyFilter(wavFileName,
+                        tbLowPass.Value * 50, q,
+                        tbHighPass.Value * 50, q);
+                    //获取返回滤波数据后，每4字节->float->int16->bytes->写入wav文件
+                    float[] buffer = new float[reader.SampleCount * 2];
+                    int readCount = provider.Read(buffer, 0, buffer.Length);
+
+                    Int16[] sampleInt16 = new Int16[reader.SampleCount];
+                    byte[] sampleBytes = new byte[reader.SampleCount * 2];
+                    for (int i = 0; i < reader.SampleCount; i++)
+                    {
+                        //32768f，16位采样数据专用
+                        sampleInt16[i] = (Int16)(buffer[i * 2] * 32768f);
+                        byte[] bytes = BitConverter.GetBytes(sampleInt16[i]);
+                        sampleBytes[i * 2] = bytes[0];
+                        sampleBytes[i * 2 + 1] = bytes[1];
+                    }
+
+                    /*
+                    //Int16[] sampleInt16 = new Int16[reader.SampleCount * 2];
+                    //byte[] sampleBytes = new byte[reader.SampleCount * 4];
+                    //for (int i = 0; i < reader.SampleCount * 2; i++)
+                    //{
+                    //    //32768f，16位采样数据专用
+                    //    sampleInt16[i] = (Int16)(buffer[i] * 32768f);
+                    //    byte[] bytes = BitConverter.GetBytes(sampleInt16[i]);
+                    //    sampleBytes[i] = bytes[0];
+                    //    sampleBytes[i + 1] = bytes[1];
+                    //}
+                    //WaveChannel32 channel = new WaveChannel32(reader);
+                    */
+
+                    FileStream fs = new FileStream(sfd.FileName, FileMode.Create, FileAccess.Write);
+                    WaveFileWriter writer = new WaveFileWriter(fs, reader.WaveFormat);
+                    writer.Write(sampleBytes, 0, sampleBytes.Length);
+                    writer.Flush();
+                    writer.Close();
+                    fs.Close();
+                }                
             }
         }
         #endregion
@@ -701,6 +764,11 @@ namespace FFTWithNAudio
             }
             lblLowPassFreq.Text = $"最高频率：{tbLowPass.Value * 50} Hz";
         }
+
+        private void btnSaveFilteredWaveFile_Click(object sender, EventArgs e)
+        {
+            this.SaveFiltered();
+        }
     }
 
     class FileItem
@@ -747,17 +815,34 @@ namespace FFTWithNAudio
 
         private void CreateFilters()
         {
+
             for (int n = 0; n < channels; n++)
                 if (lowPassFilters[n] == null)
                     lowPassFilters[n] = BiQuadFilter.LowPassFilter(sampleRate, lowPassFreq, lowPassQ);
                 else
-                    lowPassFilters[n].SetLowPassFilter(sampleRate, lowPassFreq, lowPassQ );
+                    lowPassFilters[n].SetLowPassFilter(sampleRate, lowPassFreq, lowPassQ);
 
             for (int n = 0; n < channels; n++)
                 if (highPassFilters[n] == null)
                     highPassFilters[n] = BiQuadFilter.HighPassFilter(sampleRate, highPassFreq, highPassQ);
                 else
                     highPassFilters[n].SetHighPassFilter(sampleRate, highPassFreq, highPassQ);
+
+            
+            /*
+            //Shelf
+            for (int n = 0; n < channels; n++)
+                if (lowPassFilters[n] == null)
+                    lowPassFilters[n] = BiQuadFilter.LowShelf(sampleRate, lowPassFreq, 0.5f, lowPassQ);
+                else
+                    lowPassFilters[n].SetLowPassFilter(sampleRate, lowPassFreq, lowPassQ);
+
+            for (int n = 0; n < channels; n++)
+                if (highPassFilters[n] == null)
+                    highPassFilters[n] = BiQuadFilter.HighShelf(sampleRate, highPassFreq, 0.5f, highPassQ);
+                else
+                    highPassFilters[n].SetHighPassFilter(sampleRate, highPassFreq, highPassQ);
+            */
         }
 
         public WaveFormat WaveFormat { get { return sourceProvider.WaveFormat; } }
