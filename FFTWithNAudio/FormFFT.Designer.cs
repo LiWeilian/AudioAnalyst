@@ -42,6 +42,8 @@
             this.trackWavPcmPos = new System.Windows.Forms.TrackBar();
             this.panel5 = new System.Windows.Forms.Panel();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.txtQValue = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.btnSaveFilteredWaveFile = new System.Windows.Forms.Button();
             this.btnStop = new System.Windows.Forms.Button();
             this.btnPause = new System.Windows.Forms.Button();
@@ -62,8 +64,8 @@
             this.cbFFTSize = new System.Windows.Forms.ComboBox();
             this.panel6 = new System.Windows.Forms.Panel();
             this.chkAll = new System.Windows.Forms.CheckBox();
-            this.label4 = new System.Windows.Forms.Label();
-            this.txtQValue = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.nudTimes = new System.Windows.Forms.NumericUpDown();
             this.panel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -80,6 +82,7 @@
             this.groupBox4.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.panel6.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudTimes)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
@@ -224,6 +227,8 @@
             // 
             // groupBox6
             // 
+            this.groupBox6.Controls.Add(this.nudTimes);
+            this.groupBox6.Controls.Add(this.label5);
             this.groupBox6.Controls.Add(this.txtQValue);
             this.groupBox6.Controls.Add(this.label4);
             this.groupBox6.Controls.Add(this.btnSaveFilteredWaveFile);
@@ -237,14 +242,31 @@
             this.groupBox6.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox6.Location = new System.Drawing.Point(0, 278);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(219, 285);
+            this.groupBox6.Size = new System.Drawing.Size(219, 310);
             this.groupBox6.TabIndex = 12;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "滤波和播放";
             // 
+            // txtQValue
+            // 
+            this.txtQValue.Location = new System.Drawing.Point(46, 159);
+            this.txtQValue.Name = "txtQValue";
+            this.txtQValue.Size = new System.Drawing.Size(155, 27);
+            this.txtQValue.TabIndex = 9;
+            this.txtQValue.Text = "1.0";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(7, 162);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(36, 20);
+            this.label4.TabIndex = 8;
+            this.label4.Text = "Q值";
+            // 
             // btnSaveFilteredWaveFile
             // 
-            this.btnSaveFilteredWaveFile.Location = new System.Drawing.Point(11, 248);
+            this.btnSaveFilteredWaveFile.Location = new System.Drawing.Point(11, 274);
             this.btnSaveFilteredWaveFile.Name = "btnSaveFilteredWaveFile";
             this.btnSaveFilteredWaveFile.Size = new System.Drawing.Size(195, 30);
             this.btnSaveFilteredWaveFile.TabIndex = 7;
@@ -454,9 +476,9 @@
             // 
             this.panel6.Controls.Add(this.chkAll);
             this.panel6.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel6.Location = new System.Drawing.Point(0, 563);
+            this.panel6.Location = new System.Drawing.Point(0, 588);
             this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(219, 78);
+            this.panel6.Size = new System.Drawing.Size(219, 53);
             this.panel6.TabIndex = 8;
             // 
             // chkAll
@@ -470,22 +492,31 @@
             this.chkAll.UseVisualStyleBackColor = true;
             this.chkAll.CheckedChanged += new System.EventHandler(this.chkAll_CheckedChanged);
             // 
-            // label4
+            // label5
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(7, 162);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(36, 20);
-            this.label4.TabIndex = 8;
-            this.label4.Text = "Q值";
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(7, 250);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(69, 20);
+            this.label5.TabIndex = 10;
+            this.label5.Text = "迭代次数";
             // 
-            // txtQValue
+            // nudTimes
             // 
-            this.txtQValue.Location = new System.Drawing.Point(46, 159);
-            this.txtQValue.Name = "txtQValue";
-            this.txtQValue.Size = new System.Drawing.Size(155, 27);
-            this.txtQValue.TabIndex = 9;
-            this.txtQValue.Text = "1.0";
+            this.nudTimes.Location = new System.Drawing.Point(77, 247);
+            this.nudTimes.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nudTimes.Name = "nudTimes";
+            this.nudTimes.Size = new System.Drawing.Size(120, 27);
+            this.nudTimes.TabIndex = 11;
+            this.nudTimes.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             // 
             // FormFFT
             // 
@@ -522,6 +553,7 @@
             this.groupBox3.PerformLayout();
             this.panel6.ResumeLayout(false);
             this.panel6.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudTimes)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -564,6 +596,8 @@
         private System.Windows.Forms.Button btnSaveFilteredWaveFile;
         private System.Windows.Forms.TextBox txtQValue;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.NumericUpDown nudTimes;
+        private System.Windows.Forms.Label label5;
     }
 }
 
