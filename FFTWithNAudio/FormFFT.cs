@@ -506,7 +506,7 @@ namespace FFTWithNAudio
                 SaveFileDialog sfd = new SaveFileDialog();
                 sfd.Filter = "波形音频文件(*.wav)|*.wav";
                 sfd.DefaultExt = ".wav";
-                sfd.FileName = $"{Path.GetDirectoryName(wavFileName)}\\滤波.{DateTime.Now.ToString("yyyyMMddHHmmssfff")}.{highPassFreq}Hz-{lowPassFreq}Hz.wav";
+                sfd.FileName = $"{Path.GetDirectoryName(wavFileName)}\\{Path.GetFileNameWithoutExtension(wavFileName)}.{highPassFreq}Hz-{lowPassFreq}Hz.{DateTime.Now.ToString("yyyyMMddHHmmss")}.wav";
                 sfd.OverwritePrompt = true;
                 if (sfd.ShowDialog() == DialogResult.OK)
                 {
@@ -532,7 +532,7 @@ namespace FFTWithNAudio
                         }
 
                         Application.DoEvents();
-                        this.AddWaveFileToList(sfd.FileName);
+                        this.AddWaveFileToList(new string[] { sfd.FileName });
                     }
                     catch (Exception)
                     {
@@ -578,9 +578,21 @@ namespace FFTWithNAudio
         }
         #endregion
 
-        private void AddWaveFileToList(string fileName)
+        private bool listingFile = false;
+        private void AddWaveFileToList(string[] fileNames)
         {
-            lstWavFiles.Items.Add(new FileItem { FileName = fileName });
+            try
+            {
+                listingFile = true;
+                for (int i = 0; i < fileNames.Length; i++)
+                {
+                    lstWavFiles.Items.Add(new FileItem { FileName = fileNames[i] });
+                }
+            }
+            finally
+            {
+                listingFile = false;
+            }
             lstWavFiles.SelectedIndex = lstWavFiles.Items.Count - 1;
         }
 
@@ -589,17 +601,17 @@ namespace FFTWithNAudio
             OpenFileDialog openFileDialog = new OpenFileDialog
             {
                 Filter = "Wave音频文件(*.wav)|*.wav",
-                Multiselect = false
+                Multiselect = true
             };
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                this.AddWaveFileToList(openFileDialog.FileName);
+                this.AddWaveFileToList(openFileDialog.FileNames);
             }
         }
 
         private void lstWavFiles_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (lstWavFiles.SelectedItem != null && lstWavFiles.SelectedItem is FileItem)
+            if (!listingFile && lstWavFiles.SelectedItem != null && lstWavFiles.SelectedItem is FileItem)
             {
                 UpdateTrackBar((lstWavFiles.SelectedItem as FileItem).FileName, int.Parse(cbFFTSize.Text));
                 if (chkAll.Checked)
