@@ -1,5 +1,9 @@
-FFTWithNAudio/bin/
-FFTWithNAudio/obj/
-packages/
+**/bin/
+**/obj/
+**/.vs/
 *.lock
 *.ide
+*.exe
+*.obj
+*.o
+**/packages/
