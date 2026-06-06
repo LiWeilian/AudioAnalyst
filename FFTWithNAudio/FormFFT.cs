@@ -388,8 +388,13 @@ namespace FFTWithNAudio
                     bitmap.SetPixel(x, y, color);
                 }
             }
-
-            bitmap.Save($".\\temp\\{DateTime.Now.ToString("yyyyMMddHHmmss")}.png", ImageFormat.Png);
+            
+            String tempDir = ".\\temp";
+            if (!Directory.Exists(tempDir))
+            {
+                Directory.CreateDirectory(tempDir);
+            }
+            bitmap.Save($"{tempDir}\\{DateTime.Now.ToString("yyyyMMddHHmmss")}.png", ImageFormat.Png);
             FormSpectrogram.Instance.Image = bitmap;
             FormSpectrogram.Instance.ImageScale = new ImageScale
             {
